@@ -38,77 +38,14 @@ export default defineConfig({
     // Target modern browsers for smaller bundles
     target: 'es2015',
     // Optimize chunk size
-    chunkSizeWarningLimit: 500,
+    chunkSizeWarningLimit: 1000,
     // Ensure proper module preloading
     modulePreload: {
       polyfill: true
     },
     rollupOptions: {
       output: {
-        // Manual chunk splitting for optimal loading
-        manualChunks: (id) => {
-          // Let Vite handle React and React-dependent libraries automatically
-          // to ensure proper load order
-          
-          // Charts and visualization
-          if (id.includes('node_modules/recharts') || 
-              id.includes('node_modules/d3-')) {
-            return 'vendor-charts';
-          }
-          
-          // Form libraries
-          if (id.includes('node_modules/react-hook-form') ||
-              id.includes('node_modules/react-select') ||
-              id.includes('node_modules/react-datepicker')) {
-            return 'vendor-forms';
-          }
-          
-          // Utilities
-          if (id.includes('node_modules/axios') || 
-              id.includes('node_modules/date-fns') ||
-              id.includes('node_modules/clsx')) {
-            return 'vendor-utils';
-          }
-          
-          // PDF and document libraries
-          if (id.includes('node_modules/jspdf') ||
-              id.includes('node_modules/pdf-lib') ||
-              id.includes('node_modules/xlsx') ||
-              id.includes('node_modules/html2canvas')) {
-            return 'vendor-documents';
-          }
-          
-          // Design system components
-          if (id.includes('/src/design-system/')) {
-            return 'design-system';
-          }
-          
-          // Space modules - split by space for better caching
-          if (id.includes('/src/modules/projects/')) {
-            return 'space-projects';
-          }
-          if (id.includes('/src/modules/hr/')) {
-            return 'space-hr';
-          }
-          if (id.includes('/src/modules/finance/')) {
-            return 'space-finance';
-          }
-          if (id.includes('/src/modules/sales/')) {
-            return 'space-sales';
-          }
-          if (id.includes('/src/modules/inventory/')) {
-            return 'space-inventory';
-          }
-          if (id.includes('/src/modules/admin/')) {
-            return 'space-admin';
-          }
-          if (id.includes('/src/modules/support/')) {
-            return 'space-support';
-          }
-          if (id.includes('/src/modules/myspace/')) {
-            return 'space-myspace';
-          }
-        },
+        // Let Vite handle chunking automatically to avoid dependency issues
         // Optimize asset file names
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
