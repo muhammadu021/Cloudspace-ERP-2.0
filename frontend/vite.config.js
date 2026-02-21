@@ -43,23 +43,8 @@ export default defineConfig({
       output: {
         // Manual chunk splitting for optimal loading
         manualChunks: (id) => {
-          // Core vendor chunk - React ecosystem (MUST include react-redux to avoid undefined React)
-          if (id.includes('node_modules/react') || 
-              id.includes('node_modules/react-dom') || 
-              id.includes('node_modules/react-router-dom') ||
-              id.includes('node_modules/react-redux') ||
-              id.includes('node_modules/@reduxjs') || 
-              id.includes('node_modules/redux') ||
-              id.includes('node_modules/scheduler')) {
-            return 'vendor-react';
-          }
-          
-          // UI libraries
-          if (id.includes('node_modules/lucide-react') || 
-              id.includes('node_modules/framer-motion') ||
-              id.includes('node_modules/@radix-ui')) {
-            return 'vendor-ui';
-          }
+          // Let Vite handle React and React-dependent libraries automatically
+          // to ensure proper load order
           
           // Charts and visualization
           if (id.includes('node_modules/recharts') || 
@@ -84,7 +69,8 @@ export default defineConfig({
           // PDF and document libraries
           if (id.includes('node_modules/jspdf') ||
               id.includes('node_modules/pdf-lib') ||
-              id.includes('node_modules/xlsx')) {
+              id.includes('node_modules/xlsx') ||
+              id.includes('node_modules/html2canvas')) {
             return 'vendor-documents';
           }
           
