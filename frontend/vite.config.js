@@ -39,6 +39,10 @@ export default defineConfig({
     target: 'es2015',
     // Optimize chunk size
     chunkSizeWarningLimit: 500,
+    // Ensure proper module preloading
+    modulePreload: {
+      polyfill: true
+    },
     rollupOptions: {
       output: {
         // Manual chunk splitting for optimal loading
