@@ -26,7 +26,7 @@ const Login = () => {
   const location = useLocation();
   const hasNavigated = useRef(false);
 
-  const from = location.state?.from?.pathname || "/self-service";
+  const from = location.state?.from?.pathname || "/dashboard";
 
   const {
     register,
