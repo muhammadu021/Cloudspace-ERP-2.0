@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fix User Package</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+        .result.success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .result.error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Fix User Package</h1>
+        
+        <div class="info">
+            <strong>Instructions:</strong><br>
+            1. Login as admin first to get your token<br>
+            2. Enter the user's email<br>
+            3. Select the package<br>
+            4. Click "Fix User Package"
+        </div>
+
+        <div class="form-group">
+            <label for="token">Admin Token (from localStorage):</label>
+            <input type="text" id="token" placeholder="Paste your admin token here">
+            <small style="color: #666;">Open browser console and type: localStorage.getItem('token')</small>
+        </div>
+
+        <div class="form-group">
+            <label for="email">User Email:</label>
+            <input type="email" id="email" value="earlywarning@gmail.com" placeholder="user@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="package">Package:</label>
+            <select id="package">
+                <option value="trial">Trial</option>
+                <option value="bronze">Bronze</option>
+                <option value="silver" selected>Silver</option>
+                <option value="gold">Gold</option>
+                <option value="platinum">Platinum</option>
+            </select>
+        </div>
+
+        <button onclick="fixUserPackage()">Fix User Package</button>
+
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        // Auto-fill token from localStorage if available
+        window.addEventListener('load', () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                document.getElementById('token').value = token;
+            }
+        });
+
+        async function fixUserPackage() {
+            const token = document.getElementById('token').value;
+            const email = document.getElementById('email').value;
+            const packageName = document.getElementById('package').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!token) {
+                showResult('error', 'Please enter your admin token');
+                return;
+            }
+
+            if (!email) {
+                showResult('error', 'Please enter user email');
+                return;
+            }
+
+            try {
+                const button = document.querySelector('button');
+                button.disabled = true;
+                button.textContent = 'Fixing...';
+
+                const response = await fetch('http://localhost:5050/api/v1/admin/fix-user-package', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        package: packageName
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showResult('success', `
+                        <strong>✅ Success!</strong><br><br>
+                        <strong>User:</strong> ${data.data.user}<br>
+                        <strong>Package:</strong> ${data.data.package}<br>
+                        <strong>Modules:</strong> ${data.data.modules.length}<br>
+                        <strong>Companies Updated:</strong> ${data.data.companiesUpdated.join(', ')}<br>
+                        <strong>UserType Updated:</strong> ${data.data.userTypeUpdated ? 'Yes' : 'No'}<br><br>
+                        <strong>Modules:</strong><br>
+                        <pre>${data.data.modules.join('\n')}</pre>
+                        <br>
+                        <strong>Next Steps:</strong><br>
+                        1. Logout and login again as ${email}<br>
+                        2. Check browser console for module logs<br>
+                        3. Verify ${packageName} modules are visible
+                    `);
+                } else {
+                    showResult('error', `<strong>❌ Error:</strong><br>${data.message}`);
+                }
+
+                button.disabled = false;
+                button.textContent = 'Fix User Package';
+
+            } catch (error) {
+                showResult('error', `<strong>❌ Error:</strong><br>${error.message}`);
+                const button = document.querySelector('button');
+                button.disabled = false;
+                button.textContent = 'Fix User Package';
+            }
+        }
+
+        function showResult(type, message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = `result ${type}`;
+            resultDiv.innerHTML = message;
+            resultDiv.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+  "name": "cleardesk-erp",
+  "version": "1.0.0",
+  "description": "ClearDesk Integrated ERP System",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm run dev",
+    "start:backend": "cd backend && npm run dev",
+    "start:backend:5050": "PORT=5050 cd backend && npm run dev",
+    "start:backend:5003": "PORT=5003 cd backend && npm run dev",
+    "start:backend:5005": "PORT=5005 cd backend && npm run dev",
+    "start:frontend": "cd frontend && npm run dev",
+    "backend:install": "cd backend && npm install",
+    "frontend:install": "cd frontend && npm install",
+    "install:all": "npm run backend:install && npm run frontend:install",
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "migrate": "cd backend && npm run migrate",
+    "migrate:status": "cd backend && npm run migrate:status",
+    "migrate:check": "cd backend && node scripts/check-migrations.js",
+    "migrate:messaging": "node backend/scripts/deploy-messaging-migration.js",
+    "migrate:messaging:backup": "BACKUP_MESSAGES=true node backend/scripts/deploy-messaging-migration.js",
+    "create:messages-table": "node backend/scripts/create-direct-messages-table.js",
+    "deploy": "./scripts/deploy.sh",
+    "postinstall": "npm run install:all"
+  },
+  "keywords": [
+    "erp",
+    "enterprise",
+    "management",
+    "puffin"
+  ],
+  "author": "ClearDesk",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "axios": "^1.12.1"
+  }
+}

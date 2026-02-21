@@ -1,0 +1,139 @@
+:root {
+  --primary-color: #007bff;
+}
+
+.support-portal {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #eee;
+}
+
+.nav-tabs button {
+  padding: 10px 20px;
+  border: none;
+  background: #f5f5f5;
+  cursor: pointer;
+  border-radius: 5px 5px 0 0;
+}
+
+.nav-tabs button.active {
+  background: var(--primary-color, #007bff);
+  color: white;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.tickets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.ticket-card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  background: white;
+}
+
+.ticket-card h3 {
+  margin: 0 0 10px 0;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.status.open { background: #ffeaa7; color: #2d3436; }
+.status.in-progress { background: #74b9ff; color: white; }
+.status.on-hold { background: #fd79a8; color: white; }
+.status.resolved { background: #00b894; color: white; }
+.status.closed { background: #636e72; color: white; }
+
+.create-ticket-form {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.create-ticket-form input,
+.create-ticket-form select,
+.create-ticket-form textarea {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.create-ticket-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.create-ticket-form button {
+  padding: 12px;
+  background: var(--primary-color, #007bff);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.article-item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  justify-content: between;
+  align-items: center;
+}
+
+.article-item h3 {
+  margin: 0;
+  flex: 1;
+}
+
+.category {
+  background: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.support-options {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.support-options button {
+  padding: 15px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  background: var(--primary-color, #007bff);
+  color: white;
+}

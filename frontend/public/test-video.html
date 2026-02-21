@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Call Test</title>
+    <script src='https://meet.jit.si/external_api.js'></script>
+    <style>
+        body { margin: 0; padding: 20px; font-family: Arial; }
+        #meet { width: 100%; height: 600px; }
+        button { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            background: #4CAF50; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover { background: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>Video Call Test</h1>
+    <button onclick="startMeeting()">Start Video Call</button>
+    <div id="meet"></div>
+
+    <script>
+        function startMeeting() {
+            const domain = 'meet.jit.si';
+            const options = {
+                roomName: 'TestRoom' + Date.now(),
+                width: '100%',
+                height: 600,
+                parentNode: document.querySelector('#meet'),
+                userInfo: {
+                    displayName: 'Test User'
+                }
+            };
+            const api = new JitsiMeetExternalAPI(domain, options);
+            console.log('Meeting started!');
+        }
+    </script>
+</body>
+</html>

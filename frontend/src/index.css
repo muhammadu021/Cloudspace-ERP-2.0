@@ -1,0 +1,324 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* White background */
+    --foreground: 200 32% 24%; /* Dark text for readability */
+    --card: 0 0% 100%; /* White cards */
+    --card-foreground: 200 32% 24%;
+    --popover: 0 0% 100%; /* White popovers */
+    --popover-foreground: 200 32% 24%;
+    --primary: 130 43% 19%; /* #1B4422 */
+    --primary-foreground: 0 0% 100%; /* White text on primary */
+    --secondary: 200 45% 63%; /* #77b3cb */
+    --secondary-foreground: 0 0% 100%; /* White text on secondary */
+    --muted: 200 20% 96%; /* Very light teal for muted backgrounds */
+    --muted-foreground: 200 15% 45%;
+    --accent: 200 45% 95%; /* Very light secondary for accents */
+    --accent-foreground: 200 32% 35%; /* Primary color for accent text */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 200 15% 90%; /* Light border */
+    --input: 200 15% 90%; /* Light input border */
+    --ring: 200 32% 35%; /* Primary color for focus rings */
+    --logo-green: #1b4422; /* Brand green from logo */
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 200 32% 10%; /* Dark background */
+    --foreground: 0 0% 98%; /* Light text */
+    --card: 200 32% 12%; /* Slightly lighter dark cards */
+    --card-foreground: 0 0% 98%;
+    --popover: 200 32% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 200 45% 63%; /* #77b3cb - lighter in dark mode */
+    --primary-foreground: 200 32% 10%; /* Dark text on primary */
+    --secondary: 200 32% 35%; /* #3b6475 - darker in dark mode */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 200 32% 18%;
+    --muted-foreground: 200 15% 65%;
+    --accent: 200 32% 18%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 200 32% 20%;
+    --input: 200 32% 20%;
+    --ring: 200 45% 63%;
+    --logo-green: #1b4422;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Smooth scrolling for main content area */
+  main {
+    scroll-behavior: smooth;
+  }
+  
+  /* Enhanced scroll behavior for sidebar navigation */
+  .sidebar-scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  
+  /* Sidebar scroll container */
+  .sidebar-nav-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f8fafc;
+  }
+  
+  .sidebar-nav-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .sidebar-nav-scroll::-webkit-scrollbar-track {
+    background: #f8fafc;
+    border-radius: 3px;
+  }
+  
+  .sidebar-nav-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  
+  .sidebar-nav-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .sidebar-icon-mask {
+    width: 1.25rem;
+    height: 1.25rem;
+    background-color: var(--logo-green);
+    display: inline-block;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary text-primary-foreground hover:bg-primary-600 active:bg-primary-700;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-secondary text-secondary-foreground hover:bg-secondary-600 active:bg-secondary-700;
+  }
+  
+  .btn-success {
+    @apply btn bg-success-600 text-white hover:bg-success-700 active:bg-success-800;
+  }
+  
+  .btn-warning {
+    @apply btn bg-warning-600 text-white hover:bg-warning-700 active:bg-warning-800;
+  }
+  
+  .btn-error {
+    @apply btn bg-error-600 text-white hover:bg-error-700 active:bg-error-800;
+  }
+  
+  .btn-outline {
+    @apply btn border border-gray-300 bg-transparent hover:bg-gray-50;
+  }
+  
+  .btn-ghost {
+    @apply btn hover:bg-gray-100;
+  }
+  
+  .btn-sm {
+    @apply h-8 px-3 text-xs;
+  }
+  
+  .btn-md {
+    @apply h-10 px-4 py-2;
+  }
+  
+  .btn-lg {
+    @apply h-12 px-8 text-base;
+  }
+  
+  .input {
+    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  
+  .card {
+    @apply rounded-lg border border-border bg-card text-card-foreground shadow-sm;
+  }
+  
+  .card-header {
+    @apply flex flex-col space-y-1.5 p-6;
+  }
+  
+  .card-title {
+    @apply text-2xl font-semibold leading-none tracking-tight;
+  }
+  
+  .card-description {
+    @apply text-sm text-muted-foreground;
+  }
+  
+  .card-content {
+    @apply p-6 pt-0;
+  }
+  
+  .card-footer {
+    @apply flex items-center p-6 pt-0;
+  }
+  
+  .badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  }
+  
+  .badge-default {
+    @apply badge border-transparent bg-primary text-primary-foreground hover:bg-primary/80;
+  }
+  
+  .badge-secondary {
+    @apply badge border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  
+  .badge-success {
+    @apply badge border-transparent bg-success-100 text-success-800;
+  }
+  
+  .badge-warning {
+    @apply badge border-transparent bg-warning-100 text-warning-800;
+  }
+  
+  .badge-error {
+    @apply badge border-transparent bg-error-100 text-error-800;
+  }
+  
+  .badge-outline {
+    @apply badge text-gray-900;
+  }
+  
+  .table {
+    @apply w-full caption-bottom text-sm;
+  }
+  
+  .table-header {
+    @apply border-b;
+  }
+  
+  .table-body {
+    @apply [&_tr:last-child]:border-0;
+  }
+  
+  .table-footer {
+    @apply bg-primary font-medium text-primary-foreground;
+  }
+  
+  .table-row {
+    @apply border-b transition-colors hover:bg-gray-50 data-[state=selected]:bg-gray-100;
+  }
+  
+  .table-head {
+    @apply h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0;
+  }
+  
+  .table-cell {
+    @apply p-4 align-middle [&:has([role=checkbox])]:pr-0;
+  }
+  
+  .sidebar-nav {
+    @apply flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1;
+  }
+  
+  .sidebar-nav-item {
+    @apply inline-flex items-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2 justify-start;
+  }
+  
+  .sidebar-nav-item.active {
+    @apply bg-primary-50 text-primary;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+  }
+  
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+  
+  .animate-in {
+    animation: enter 0.2s ease-out;
+  }
+  
+  .animate-out {
+    animation: exit 0.2s ease-in;
+  }
+  
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes exit {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+  }
+}

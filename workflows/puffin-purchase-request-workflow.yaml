@@ -1,0 +1,641 @@
+---
+workflow:
+  name: "Puffin Group Purchase Request"
+  version: "1.0"
+  description: "Complete purchase request workflow with conditional routing and approval stages"
+  
+  # Form Configuration
+  form:
+    title: "Purchase Request Form"
+    fields:
+      - name: "requester_name"
+        type: "text"
+        label: "Requester Name"
+        required: true
+        validation:
+          min_length: 2
+          max_length: 100
+      
+      - name: "department"
+        type: "dropdown"
+        label: "Department"
+        required: true
+        options:
+          - value: "operations_1"
+            label: "Operations 1"
+          - value: "operations_2" 
+            label: "Operations 2"
+          - value: "admin"
+            label: "Admin"
+          - value: "farm_manager"
+            label: "Farm Manager"
+      
+      - name: "item_service_requested"
+        type: "textarea"
+        label: "Item/Service Requested"
+        required: true
+        validation:
+          min_length: 10
+          max_length: 2000
+        placeholder: "Describe the item or service you are requesting..."
+      
+      - name: "amount"
+        type: "currency"
+        label: "Amount (NGN)"
+        required: true
+        currency: "NGN"
+        validation:
+          min_value: 1
+          max_value: 100000000
+        format: "₦{amount:,.2f}"
+      
+      - name: "vendor_name"
+        type: "text"
+        label: "Vendor Name"
+        required: true
+        validation:
+          min_length: 2
+          max_length: 200
+      
+      - name: "vendor_bank_details"
+        type: "textarea"
+        label: "Vendor Bank Details"
+        required: true
+        placeholder: "Bank Name, Account Number, Account Name, Sort Code"
+        validation:
+          min_length: 20
+          max_length: 500
+      
+      - name: "supporting_document"
+        type: "file"
+        label: "Supporting Document"
+        required: false
+        allowed_types: ["pdf", "doc", "docx", "jpg", "png", "xlsx"]
+        max_size: "10MB"
+
+  # Workflow Stages
+  stages:
+    - id: "request_creation"
+      name: "Request Creation"
+      type: "form_submission"
+      description: "Initial request submission by requester"
+      
+      actions:
+        - type: "create_record"
+          table: "purchase_requests"
+          status: "submitted"
+        
+        - type: "generate_request_id"
+          format: "PR-{YYYY}-{MM}-{DDDD}"
+          example: "PR-2024-01-0001"
+        
+        - type: "log_audit"
+          action: "request_created"
+          actor: "{requester_name}"
+          details: "Purchase request submitted for {item_service_requested}"
+        
+        - type: "route_to_next_stage"
+          next_stage: "approval_stage"
+
+    - id: "approval_stage"
+      name: "Department Head Approval"
+      type: "approval"
+      description: "Department head validates and approves the request"
+      
+      participants:
+        assignment_logic: "department_head"
+        department_mapping:
+          operations_1: "operations1_head@puffingroupltd.com"
+          operations_2: "operations2_head@puffingroupltd.com"
+          admin: "admin_head@puffingroupltd.com"
+          farm_manager: "farm_manager_head@puffingroupltd.com"
+      
+      actions:
+        - type: "send_notification"
+          trigger: "stage_entry"
+          recipients: ["{department_head_email}"]
+          template: "approval_request"
+          subject: "Purchase Request Approval Required - {request_id}"
+          
+        - type: "update_status"
+          status: "pending_approval"
+        
+        - type: "log_audit"
+          action: "approval_requested"
+          actor: "system"
+          details: "Request routed to {department_head_email} for approval"
+      
+      decisions:
+        - action: "approve"
+          label: "Approve Request"
+          next_action: "route_to_processing"
+          required_fields: ["approval_comments"]
+          
+        - action: "reject"
+          label: "Reject Request"
+          next_action: "end_workflow"
+          required_fields: ["rejection_reason"]
+          
+        - action: "return_for_revision"
+          label: "Return for Revision"
+          next_action: "request_creation"
+          required_fields: ["revision_comments"]
+
+    - id: "processing_stage"
+      name: "Processing & Routing"
+      type: "conditional_routing"
+      description: "Route based on amount threshold"
+      
+      routing_logic:
+        - condition: "amount < 1000000"
+          description: "Amount less than ₦1,000,000"
+          next_stage: "finance_stage"
+          
+        - condition: "amount >= 1000000"
+          description: "Amount ₦1,000,000 or more"
+          next_stage: "procurement_stage"
+      
+      actions:
+        - type: "evaluate_amount"
+          field: "amount"
+          threshold: 1000000
+          
+        - type: "log_audit"
+          action: "routing_decision"
+          actor: "system"
+          details: "Request routed based on amount: ₦{amount}"
+
+    - id: "procurement_stage"
+      name: "Procurement Review"
+      type: "approval"
+      description: "Procurement team validates vendor details and sourcing"
+      
+      participants:
+        assignment_logic: "role_based"
+        roles: ["procurement_officer", "procurement_manager"]
+        primary_contact: "procurement@puffingroupltd.com"
+      
+      actions:
+        - type: "send_notification"
+          trigger: "stage_entry"
+          recipients: ["procurement@puffingroupltd.com"]
+          template: "procurement_review"
+          subject: "Procurement Review Required - {request_id}"
+          
+        - type: "update_status"
+          status: "pending_procurement_review"
+        
+        - type: "log_audit"
+          action: "procurement_review_requested"
+          actor: "system"
+          details: "Request sent to procurement for vendor validation"
+      
+      review_criteria:
+        - vendor_verification: "Verify vendor legitimacy and credentials"
+        - pricing_analysis: "Compare pricing with market rates"
+        - quality_assessment: "Assess vendor quality and reliability"
+        - compliance_check: "Ensure vendor meets company standards"
+      
+      decisions:
+        - action: "approve"
+          label: "Approve Vendor & Sourcing"
+          next_action: "route_to_finance"
+          required_fields: ["procurement_comments", "vendor_verification_status"]
+          
+        - action: "reject"
+          label: "Reject - Vendor Issues"
+          next_action: "end_workflow"
+          required_fields: ["rejection_reason", "vendor_issues"]
+          
+        - action: "request_alternative_vendor"
+          label: "Request Alternative Vendor"
+          next_action: "request_creation"
+          required_fields: ["alternative_vendor_reason"]
+
+    - id: "finance_stage"
+      name: "Finance Approval"
+      type: "approval"
+      description: "Finance team approves budget allocation and payment"
+      
+      participants:
+        assignment_logic: "role_based"
+        roles: ["finance_officer", "finance_manager"]
+        primary_contact: "finance@puffingroupltd.com"
+      
+      actions:
+        - type: "send_notification"
+          trigger: "stage_entry"
+          recipients: ["finance@puffingroupltd.com"]
+          template: "finance_approval"
+          subject: "Finance Approval Required - {request_id}"
+          
+        - type: "update_status"
+          status: "pending_finance_approval"
+        
+        - type: "log_audit"
+          action: "finance_review_requested"
+          actor: "system"
+          details: "Request sent to finance for budget approval"
+      
+      review_criteria:
+        - budget_availability: "Verify budget allocation and availability"
+        - cost_justification: "Review cost justification and necessity"
+        - payment_terms: "Validate payment terms and conditions"
+        - compliance: "Ensure financial compliance and authorization limits"
+      
+      decisions:
+        - action: "approve"
+          label: "Approve Budget & Payment"
+          next_action: "route_to_payment"
+          required_fields: ["finance_comments", "budget_code", "payment_method"]
+          
+        - action: "reject"
+          label: "Reject - Budget Issues"
+          next_action: "end_workflow"
+          required_fields: ["rejection_reason", "budget_constraints"]
+          
+        - action: "request_budget_revision"
+          label: "Request Budget Revision"
+          next_action: "request_creation"
+          required_fields: ["budget_revision_reason"]
+
+    - id: "pay_vendor_stage"
+      name: "Vendor Payment"
+      type: "execution"
+      description: "Finance executes payment to vendor"
+      
+      participants:
+        assignment_logic: "role_based"
+        roles: ["finance_officer", "accounts_payable"]
+        primary_contact: "finance@puffingroupltd.com"
+      
+      actions:
+        - type: "create_payment_record"
+          table: "vendor_payments"
+          fields:
+            - request_id: "{request_id}"
+            - vendor_name: "{vendor_name}"
+            - amount: "{amount}"
+            - bank_details: "{vendor_bank_details}"
+            - payment_status: "pending"
+            
+        - type: "send_notification"
+          trigger: "stage_entry"
+          recipients: ["finance@puffingroupltd.com"]
+          template: "payment_execution"
+          subject: "Payment Execution Required - {request_id}"
+          
+        - type: "update_status"
+          status: "payment_in_progress"
+        
+        - type: "log_audit"
+          action: "payment_initiated"
+          actor: "system"
+          details: "Payment process initiated for vendor {vendor_name}"
+      
+      payment_process:
+        - step: "verify_bank_details"
+          description: "Verify vendor bank account details"
+          
+        - step: "prepare_payment"
+          description: "Prepare payment instruction/transfer"
+          
+        - step: "execute_payment"
+          description: "Execute bank transfer or payment"
+          
+        - step: "confirm_payment"
+          description: "Confirm payment completion"
+      
+      completion_actions:
+        - type: "update_payment_status"
+          status: "completed"
+          
+        - type: "generate_payment_reference"
+          format: "PAY-{request_id}-{YYYYMMDD}"
+          
+        - type: "route_to_next_stage"
+          next_stage: "delivery_stage"
+
+    - id: "delivery_stage"
+      name: "Delivery Confirmation"
+      type: "confirmation"
+      description: "Operations 2 confirms item/service delivery"
+      
+      participants:
+        assignment_logic: "department_based"
+        department: "operations_2"
+        contacts: ["opp2_manager@puffingroupltd.com", "opp2_supervisor@puffingroupltd.com"]
+      
+      actions:
+        - type: "send_notification"
+          trigger: "stage_entry"
+          recipients: ["opp2_manager@puffingroupltd.com"]
+          template: "delivery_confirmation"
+          subject: "Delivery Confirmation Required - {request_id}"
+          
+        - type: "update_status"
+          status: "awaiting_delivery_confirmation"
+        
+        - type: "log_audit"
+          action: "delivery_confirmation_requested"
+          actor: "system"
+          details: "Delivery confirmation requested from Operations 2"
+      
+      confirmation_criteria:
+        - delivery_received: "Confirm item/service has been delivered"
+        - quality_check: "Verify quality meets specifications"
+        - quantity_verification: "Confirm correct quantity received"
+        - documentation: "Ensure proper delivery documentation"
+      
+      decisions:
+        - action: "confirm_delivery"
+          label: "Confirm Delivery Complete"
+          next_action: "complete_workflow"
+          required_fields: ["delivery_date", "delivery_comments", "quality_rating"]
+          
+        - action: "report_delivery_issue"
+          label: "Report Delivery Issue"
+          next_action: "escalate_delivery_issue"
+          required_fields: ["issue_description", "resolution_required"]
+          
+        - action: "partial_delivery"
+          label: "Partial Delivery Received"
+          next_action: "track_remaining_delivery"
+          required_fields: ["partial_delivery_details", "expected_completion_date"]
+
+  # Workflow Completion
+  completion:
+    - id: "complete_workflow"
+      name: "Workflow Complete"
+      type: "completion"
+      
+      actions:
+        - type: "update_status"
+          status: "completed"
+          
+        - type: "send_completion_notifications"
+          recipients: 
+            - "{requester_email}"
+            - "{department_head_email}"
+            - "finance@puffingroupltd.com"
+          template: "workflow_completion"
+          subject: "Purchase Request Completed - {request_id}"
+          
+        - type: "log_audit"
+          action: "workflow_completed"
+          actor: "system"
+          details: "Purchase request workflow completed successfully"
+          
+        - type: "archive_request"
+          retention_period: "7_years"
+
+  # Notification Templates
+  notifications:
+    templates:
+      approval_request:
+        subject: "Purchase Request Approval Required - {request_id}"
+        body: |
+          Dear {recipient_name},
+          
+          A new purchase request requires your approval:
+          
+          Request ID: {request_id}
+          Requester: {requester_name}
+          Department: {department}
+          Item/Service: {item_service_requested}
+          Amount: ₦{amount:,.2f}
+          Vendor: {vendor_name}
+          
+          Please review and approve/reject this request in the ERP system.
+          
+          Best regards,
+          Puffin Group ERP System
+      
+      procurement_review:
+        subject: "Procurement Review Required - {request_id}"
+        body: |
+          Dear Procurement Team,
+          
+          A purchase request requires procurement review:
+          
+          Request ID: {request_id}
+          Amount: ₦{amount:,.2f}
+          Vendor: {vendor_name}
+          Bank Details: {vendor_bank_details}
+          
+          Please verify vendor credentials and sourcing details.
+          
+          Best regards,
+          Puffin Group ERP System
+      
+      finance_approval:
+        subject: "Finance Approval Required - {request_id}"
+        body: |
+          Dear Finance Team,
+          
+          A purchase request requires finance approval:
+          
+          Request ID: {request_id}
+          Amount: ₦{amount:,.2f}
+          Vendor: {vendor_name}
+          
+          Please review budget allocation and approve payment.
+          
+          Best regards,
+          Puffin Group ERP System
+      
+      payment_execution:
+        subject: "Payment Execution Required - {request_id}"
+        body: |
+          Dear Finance Team,
+          
+          Please execute payment for approved purchase request:
+          
+          Request ID: {request_id}
+          Vendor: {vendor_name}
+          Amount: ₦{amount:,.2f}
+          Bank Details: {vendor_bank_details}
+          
+          Best regards,
+          Puffin Group ERP System
+      
+      delivery_confirmation:
+        subject: "Delivery Confirmation Required - {request_id}"
+        body: |
+          Dear Operations 2 Team,
+          
+          Please confirm delivery for purchase request:
+          
+          Request ID: {request_id}
+          Item/Service: {item_service_requested}
+          Vendor: {vendor_name}
+          
+          Please confirm receipt and quality in the ERP system.
+          
+          Best regards,
+          Puffin Group ERP System
+      
+      workflow_completion:
+        subject: "Purchase Request Completed - {request_id}"
+        body: |
+          Dear Team,
+          
+          Purchase request has been completed successfully:
+          
+          Request ID: {request_id}
+          Requester: {requester_name}
+          Item/Service: {item_service_requested}
+          Amount: ₦{amount:,.2f}
+          Status: Completed
+          
+          Thank you for your participation in this workflow.
+          
+          Best regards,
+          Puffin Group ERP System
+
+  # Audit & Tracking Configuration
+  audit:
+    table_name: "workflow_audit_log"
+    required_fields:
+      - request_id
+      - timestamp
+      - actor
+      - action
+      - stage
+      - details
+      - ip_address
+      - user_agent
+    
+    tracked_actions:
+      - "request_created"
+      - "approval_requested"
+      - "approved"
+      - "rejected"
+      - "returned_for_revision"
+      - "routing_decision"
+      - "procurement_review_requested"
+      - "procurement_approved"
+      - "finance_review_requested"
+      - "finance_approved"
+      - "payment_initiated"
+      - "payment_completed"
+      - "delivery_confirmation_requested"
+      - "delivery_confirmed"
+      - "workflow_completed"
+      - "workflow_cancelled"
+    
+    retention_policy:
+      active_requests: "indefinite"
+      completed_requests: "7_years"
+      cancelled_requests: "3_years"
+
+  # Database Schema Requirements
+  database_tables:
+    purchase_requests:
+      fields:
+        - id: "primary_key"
+        - request_id: "varchar(20), unique"
+        - requester_name: "varchar(100)"
+        - requester_email: "varchar(255)"
+        - department: "varchar(50)"
+        - item_service_requested: "text"
+        - amount: "decimal(15,2)"
+        - vendor_name: "varchar(200)"
+        - vendor_bank_details: "text"
+        - supporting_document_path: "varchar(500)"
+        - current_stage: "varchar(50)"
+        - status: "varchar(50)"
+        - created_at: "timestamp"
+        - updated_at: "timestamp"
+        - completed_at: "timestamp"
+    
+    workflow_approvals:
+      fields:
+        - id: "primary_key"
+        - request_id: "varchar(20)"
+        - stage: "varchar(50)"
+        - approver_email: "varchar(255)"
+        - action: "varchar(50)"
+        - comments: "text"
+        - approved_at: "timestamp"
+    
+    vendor_payments:
+      fields:
+        - id: "primary_key"
+        - request_id: "varchar(20)"
+        - vendor_name: "varchar(200)"
+        - amount: "decimal(15,2)"
+        - bank_details: "text"
+        - payment_reference: "varchar(50)"
+        - payment_status: "varchar(50)"
+        - payment_date: "timestamp"
+    
+    workflow_audit_log:
+      fields:
+        - id: "primary_key"
+        - request_id: "varchar(20)"
+        - timestamp: "timestamp"
+        - actor: "varchar(255)"
+        - action: "varchar(100)"
+        - stage: "varchar(50)"
+        - details: "text"
+        - ip_address: "varchar(45)"
+        - user_agent: "text"
+
+  # Business Rules & Validations
+  business_rules:
+    amount_thresholds:
+      low_value: 1000000  # ₦1,000,000
+      description: "Requests below this amount skip procurement review"
+    
+    approval_timeouts:
+      department_approval: "3_days"
+      procurement_review: "5_days"
+      finance_approval: "3_days"
+      delivery_confirmation: "14_days"
+    
+    escalation_rules:
+      - condition: "approval_timeout"
+        action: "escalate_to_manager"
+        notification: "approval_timeout_escalation"
+      
+      - condition: "payment_delay"
+        action: "notify_finance_manager"
+        notification: "payment_delay_alert"
+    
+    validation_rules:
+      - field: "amount"
+        rule: "must_be_positive"
+        message: "Amount must be greater than zero"
+      
+      - field: "vendor_bank_details"
+        rule: "must_contain_account_number"
+        message: "Bank details must include account number"
+      
+      - field: "supporting_document"
+        rule: "virus_scan_required"
+        message: "All uploaded files must pass virus scanning"
+
+  # Integration Points
+  integrations:
+    email_service:
+      provider: "smtp"
+      configuration:
+        - smtp_server: "mail.puffingroupltd.com"
+        - port: 587
+        - authentication: "required"
+        - encryption: "tls"
+    
+    file_storage:
+      provider: "local_storage"
+      configuration:
+        - upload_path: "/uploads/purchase_requests/"
+        - max_file_size: "10MB"
+        - allowed_types: ["pdf", "doc", "docx", "jpg", "png", "xlsx"]
+    
+    payment_system:
+      provider: "manual_process"
+      configuration:
+        - requires_dual_authorization: true
+        - payment_methods: ["bank_transfer", "check"]
+        - approval_limits: "as_per_company_policy"

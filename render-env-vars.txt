@@ -1,0 +1,23 @@
+# Render.com Environment Variables Template
+# Copy these to your Render.com service environment settings
+
+# Required - Application Environment
+NODE_ENV=production
+
+# Optional - Deployment Platform (defaults to 'render' if not set)
+DEPLOYMENT_PLATFORM=render
+
+# Optional - Enable proxy debugging (set to 'true' only for troubleshooting)
+DEBUG_PROXY=false
+
+# Your existing environment variables should also be set:
+# DATABASE_URL=your_database_url
+# JWT_SECRET=your_jwt_secret
+# etc.
+
+# Instructions:
+# 1. Go to your Render.com dashboard
+# 2. Select your backend service
+# 3. Go to the "Environment" tab
+# 4. Add these variables (if not already present)
+# 5. Deploy your service with the updated code
