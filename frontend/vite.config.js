@@ -8,7 +8,7 @@ const isDemoMode = process.env.VITE_DEMO_MODE === 'true';
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    include: ["react", "react-dom"],
+    include: ["react", "react-dom", "react-redux", "@reduxjs/toolkit"],
     force: true, // Force re-optimization
   },
   resolve: {
@@ -43,19 +43,15 @@ export default defineConfig({
       output: {
         // Manual chunk splitting for optimal loading
         manualChunks: (id) => {
-          // Core vendor chunk - React ecosystem
+          // Core vendor chunk - React ecosystem (MUST include react-redux to avoid undefined React)
           if (id.includes('node_modules/react') || 
               id.includes('node_modules/react-dom') || 
               id.includes('node_modules/react-router-dom') ||
+              id.includes('node_modules/react-redux') ||
+              id.includes('node_modules/@reduxjs') || 
+              id.includes('node_modules/redux') ||
               id.includes('node_modules/scheduler')) {
             return 'vendor-react';
-          }
-          
-          // Redux and state management
-          if (id.includes('node_modules/@reduxjs') || 
-              id.includes('node_modules/redux') ||
-              id.includes('node_modules/react-redux')) {
-            return 'vendor-redux';
           }
           
           // UI libraries
