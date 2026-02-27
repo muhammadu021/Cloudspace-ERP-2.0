@@ -33,6 +33,7 @@ const DashboardContent = ({
   lastUpdate,
   isRefreshing = false,
   className,
+  dashboardStats,
 }) => {
   const [isRefreshingAll, setIsRefreshingAll] = useState(false);
 
@@ -96,6 +97,7 @@ const DashboardContent = ({
         key={widget.id}
         widget={widget}
         role={role}
+        dashboardStats={dashboardStats}
       />
     ),
   }));
@@ -159,6 +161,8 @@ DashboardContent.propTypes = {
   isRefreshing: PropTypes.bool,
   /** Additional CSS classes */
   className: PropTypes.string,
+  /** Dashboard stats from demoData */
+  dashboardStats: PropTypes.object,
 };
 
 export default DashboardContent;

@@ -27,6 +27,7 @@ const getContext = (config) => {
   return {
     companyId: payload?.company_id,
     userEmail: payload?.email,
+    userId: payload?.userId,
   };
 };
 
@@ -264,6 +265,48 @@ const handlers = {
     const { companyId } = getContext(config);
     return okResponse({ success: true, data: { items: demoData.getInventoryItems ? demoData.getInventoryItems(companyId) : [] } });
   },
+  'GET /inventory/dashboard': ({ config }) => {
+    const { companyId } = getContext(config);
+    const items = demoData.getInventoryItems ? demoData.getInventoryItems(companyId) : [];
+    const movements = demoData.getInventoryMovements ? demoData.getInventoryMovements(companyId) : [];
+    
+    const totalItems = items.length;
+    const lowStockItems = items.filter(item => item.quantity <= item.min_stock).length;
+    const outOfStockItems = items.filter(item => item.quantity === 0).length;
+    const totalValue = items.reduce((sum, item) => sum + (item.quantity * item.price), 0);
+    
+    return okResponse({
+      success: true,
+      data: {
+        totalItems,
+        lowStockItems,
+        outOfStockItems,
+        totalValue,
+        recentMovements: movements.slice(0, 5).map(m => {
+          const item = items.find(i => i.id === m.item_id);
+          return {
+            id: m.id,
+            item: item?.name || 'Unknown Item',
+            type: m.type,
+            quantity: m.quantity,
+            location: item?.location?.name || 'Main Warehouse',
+            date: m.date || m.created_at,
+          };
+        }),
+        alerts: items
+          .filter(item => item.quantity <= item.min_stock)
+          .slice(0, 3)
+          .map(item => ({
+            id: item.id,
+            type: item.quantity === 0 ? 'error' : 'warning',
+            message: item.quantity === 0 
+              ? `${item.name} is out of stock` 
+              : `${item.name} is running low (${item.quantity} remaining)`,
+            action: 'Reorder',
+          })),
+      }
+    });
+  },
   'GET /inventory/dashboard/stats': ({ config }) => {
     const { companyId } = getContext(config);
     return okResponse({ success: true, data: demoData.getInventoryStats(companyId) });
@@ -373,6 +416,50 @@ const handlers = {
     demoData.deleteEmployee(params.id);
     return okResponse({ success: true });
   },
+  'GET /hr/dashboard': ({ config }) => {
+    const { companyId } = getContext(config);
+    const employees = demoData.getEmployees ? demoData.getEmployees(companyId) : [];
+    const leaves = demoData.getLeaves ? demoData.getLeaves(companyId) : [];
+    const departments = demoData.getDepartments ? demoData.getDepartments(companyId) : [];
+    
+    const pendingLeaves = leaves.filter(l => l.status === 'pending').length;
+    const activeEmployees = employees.filter(e => e.status === 'active').length;
+    
+    return okResponse({
+      success: true,
+      data: {
+        totalEmployees: employees.length,
+        activeEmployees,
+        totalDepartments: departments.length,
+        pendingLeaves,
+        attendanceRate: 94.5,
+        recentHires: employees
+          .filter(e => e.id > 14)
+          .slice(0, 5)
+          .map(e => ({
+            id: e.id,
+            name: `${e.first_name} ${e.last_name}`,
+            designation: e.designation,
+            department: e.Department?.name || 'Unknown',
+            joinDate: e.created_at || new Date().toISOString(),
+          })),
+        leaveRequests: leaves
+          .filter(l => l.status === 'pending')
+          .slice(0, 5)
+          .map(l => {
+            const employee = employees.find(e => e.id === l.employee_id);
+            return {
+              id: l.id,
+              employee: employee ? `${employee.first_name} ${employee.last_name}` : 'Unknown',
+              type: l.leave_type,
+              startDate: l.start_date,
+              endDate: l.end_date,
+              status: l.status,
+            };
+          }),
+      }
+    });
+  },
   'GET /hr/dashboard/stats': ({ config }) => {
     const { companyId } = getContext(config);
     return okResponse({ success: true, data: { stats: demoData.getHRStats(companyId) } });
@@ -468,6 +555,37 @@ const handlers = {
     const { companyId } = getContext(config);
     const payroll = demoData.getPayroll(companyId);
     return okResponse({ success: true, data: payroll });
+  },
+  'GET /finance/dashboard': ({ config }) => {
+    const { companyId } = getContext(config);
+    const expenses = demoData.getExpenses ? demoData.getExpenses(companyId) : [];
+    const totalExpenses = expenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
+    const totalRevenue = 28500000;
+    const totalProfit = totalRevenue - totalExpenses;
+    
+    return okResponse({
+      success: true,
+      data: {
+        totalRevenue,
+        totalExpenses,
+        totalProfit,
+        pendingInvoices: 5,
+        recentTransactions: expenses.slice(0, 5).map(e => ({
+          id: e.id,
+          description: e.description,
+          amount: e.amount,
+          category: e.category,
+          status: e.status,
+          date: e.submitted_on || new Date().toISOString(),
+        })),
+        monthlyRevenue: [
+          { month: 'Jan', revenue: 18500000, expenses: 12000000 },
+          { month: 'Feb', revenue: 22000000, expenses: 13500000 },
+          { month: 'Mar', revenue: 25000000, expenses: 14000000 },
+          { month: 'Apr', revenue: 28500000, expenses: totalExpenses },
+        ],
+      }
+    });
   },
   'GET /finance/dashboard/stats': ({ config }) => {
     const { companyId } = getContext(config);
@@ -768,7 +886,38 @@ const handlers = {
     return updated ? okResponse({ success: true, data: { customer: updated } }) : notFound('Customer not found');
   },
 
-  'GET /sales/dashboard': () => okResponse({ success: true, data: { totalRevenue: 0, totalOrders: 0 } }),
+  'GET /sales/dashboard': ({ config }) => {
+    const { companyId } = getContext(config);
+    const orders = demoData.getSalesOrders ? demoData.getSalesOrders(companyId) : [];
+    const customers = demoData.getCustomers ? demoData.getCustomers(companyId) : [];
+    
+    const totalRevenue = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
+    const totalOrders = orders.length;
+    const newCustomers = customers.filter(c => {
+      const createdDate = new Date(c.created_at);
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      return createdDate > thirtyDaysAgo;
+    }).length;
+    
+    return okResponse({
+      success: true,
+      data: {
+        totalRevenue,
+        totalOrders,
+        totalCustomers: customers.length,
+        newCustomers,
+        recentOrders: orders.slice(0, 5).map(o => ({
+          id: o.id,
+          customer: o.customer_name || 'Unknown',
+          amount: o.total_amount || 0,
+          status: o.status || 'pending',
+          date: o.created_at || new Date().toISOString(),
+        })),
+        topProducts: [],
+      }
+    });
+  },
 
   // ==================== COLLABORATION MODULE ====================
   'GET /collaboration/teams': () => okResponse({ success: true, data: { teams: demoData.getTeams() } }),
@@ -784,6 +933,27 @@ const handlers = {
   'POST /collaboration/events': ({ config }) => createResponse({ success: true, data: { event: demoData.addEvent(config.data || {}) } }),
 
   // ==================== ADMIN MODULE ====================
+  'GET /admin/dashboard': ({ config }) => {
+    const { companyId } = getContext(config);
+    const users = demoData.getUsers ? demoData.getUsers().filter(u => !companyId || String(u.company_id) === String(companyId)) : [];
+    const assets = demoData.getAssets ? demoData.getAssets(companyId) : [];
+    const documents = demoData.getDocuments ? demoData.getDocuments(companyId) : [];
+    
+    return okResponse({
+      success: true,
+      data: {
+        totalUsers: users.length,
+        totalAssets: assets.length,
+        totalDocuments: documents.length,
+        systemHealth: 98.5,
+        recentActivity: [
+          { id: 1, action: 'User created', user: 'System', timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString() },
+          { id: 2, action: 'Asset added', user: 'Admin', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString() },
+          { id: 3, action: 'Document uploaded', user: 'Admin', timestamp: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString() },
+        ],
+      }
+    });
+  },
   'GET /admin/assets': () => okResponse({ success: true, data: { assets: demoData.getAssets() } }),
   'POST /admin/assets': ({ config }) => createResponse({ success: true, data: { asset: demoData.addAsset(config.data || {}) } }),
   'PUT /admin/assets/:id': ({ params, config }) => {
@@ -834,6 +1004,137 @@ const handlers = {
     const { companyId } = getContext(config);
     const updated = demoData.updateBenefitEnrollment(params.id, config.data?.enrolled, companyId);
     return updated ? okResponse({ success: true, data: updated }) : notFound('Benefit not found');
+  },
+
+  // ==================== MY SPACE ====================
+  'GET /myspace/dashboard': ({ config }) => {
+    const { companyId, userId } = getContext(config);
+    console.log('[MySpace Dashboard] userId:', userId, 'companyId:', companyId);
+    
+    // Get or initialize clock in data from localStorage
+    const clockKey = `demo_clock_${userId}`;
+    const clockData = JSON.parse(localStorage.getItem(clockKey) || 'null');
+    console.log('[MySpace Dashboard] clockKey:', clockKey, 'clockData:', clockData);
+    
+    // Calculate hours worked if clocked in
+    let hoursWorked = 0;
+    if (clockData?.clockIn && !clockData?.clockOut) {
+      const now = new Date();
+      const clockInTime = new Date(clockData.clockIn);
+      hoursWorked = ((now - clockInTime) / (1000 * 60 * 60)).toFixed(1);
+    } else if (clockData?.clockIn && clockData?.clockOut) {
+      const clockInTime = new Date(clockData.clockIn);
+      const clockOutTime = new Date(clockData.clockOut);
+      hoursWorked = ((clockOutTime - clockInTime) / (1000 * 60 * 60)).toFixed(1);
+    }
+    
+    // Get recent activity from demo data
+    const recentActivity = [
+      {
+        id: 1,
+        title: 'Leave Request - Annual Leave',
+        date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        type: 'Leave Request',
+        status: 'approved'
+      },
+      {
+        id: 2,
+        title: 'Expense Claim - Travel to Abuja',
+        date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        type: 'Expense',
+        status: 'pending'
+      },
+      {
+        id: 3,
+        title: 'Document Uploaded - Medical Certificate',
+        date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        type: 'Document',
+        status: 'approved'
+      }
+    ];
+    
+    const response = {
+      success: true,
+      data: {
+        todayAttendance: {
+          clockIn: clockData?.clockIn || null,
+          clockOut: clockData?.clockOut || null,
+          hoursWorked: parseFloat(hoursWorked)
+        },
+        leaveBalance: {
+          available: 12,
+          used: 8,
+          total: 20
+        },
+        recentActivity,
+        pendingActions: []
+      }
+    };
+    
+    console.log('[MySpace Dashboard] Response:', response);
+    return okResponse(response);
+  },
+  
+  'POST /myspace/clock': ({ config }) => {
+    const { userId } = getContext(config);
+    const { type, timestamp } = config.data || {};
+    
+    console.log('[MySpace Clock] userId:', userId, 'type:', type, 'timestamp:', timestamp);
+    
+    const clockKey = `demo_clock_${userId}`;
+    const clockData = JSON.parse(localStorage.getItem(clockKey) || 'null') || {};
+    
+    console.log('[MySpace Clock] Before - clockData:', clockData);
+    
+    if (type === 'in') {
+      // Clock in
+      clockData.clockIn = timestamp || new Date().toISOString();
+      clockData.clockOut = null;
+      localStorage.setItem(clockKey, JSON.stringify(clockData));
+      
+      console.log('[MySpace Clock] Clocked IN - clockData:', clockData);
+      
+      return okResponse({
+        success: true,
+        data: {
+          message: 'Clocked in successfully',
+          clockIn: clockData.clockIn,
+          hoursWorked: 0
+        }
+      });
+    } else if (type === 'out') {
+      // Clock out
+      if (!clockData.clockIn) {
+        return okResponse({
+          success: false,
+          error: 'You must clock in first'
+        });
+      }
+      
+      clockData.clockOut = timestamp || new Date().toISOString();
+      const clockInTime = new Date(clockData.clockIn);
+      const clockOutTime = new Date(clockData.clockOut);
+      const hoursWorked = ((clockOutTime - clockInTime) / (1000 * 60 * 60)).toFixed(1);
+      
+      localStorage.setItem(clockKey, JSON.stringify(clockData));
+      
+      console.log('[MySpace Clock] Clocked OUT - clockData:', clockData, 'hours:', hoursWorked);
+      
+      return okResponse({
+        success: true,
+        data: {
+          message: 'Clocked out successfully',
+          clockIn: clockData.clockIn,
+          clockOut: clockData.clockOut,
+          hoursWorked: parseFloat(hoursWorked)
+        }
+      });
+    }
+    
+    return okResponse({
+      success: false,
+      error: 'Invalid clock type. Must be "in" or "out"'
+    });
   },
 
   // ==================== ADMINISTRATIVE ====================
@@ -978,6 +1279,190 @@ const handlers = {
       console.error('[DemoAdapter] Analytics event error:', error);
       return okResponse({ success: true, data: { logged: true } });
     }
+  },
+
+  // ==================== DASHBOARD WIDGET DATA ====================
+  'GET /dashboard/widgets/:widgetType/data': ({ params, config }) => {
+    const { companyId } = getContext(config);
+    const widgetType = params.widgetType;
+    
+    // Parse config from query params if it exists
+    let widgetConfig = {};
+    try {
+      const configParam = config.params?.config;
+      if (configParam) {
+        widgetConfig = typeof configParam === 'string' ? JSON.parse(configParam) : configParam;
+      }
+    } catch (e) {
+      console.warn('[DemoAdapter] Failed to parse widget config:', e);
+    }
+    
+    // For metric widgets, use the metricType from config
+    const metricType = widgetConfig.metricType || widgetConfig.dataKey || widgetConfig.listType || widgetType;
+    
+    console.log('[DemoAdapter] Fetching widget data for:', metricType, 'company:', companyId, 'config:', widgetConfig);
+    
+    // Map widget types to data
+    const widgetDataMap = {
+      'total-projects': () => {
+        const stats = demoData.getDashboardStats(companyId);
+        return {
+          value: stats.projects.total,
+          label: 'Total Projects',
+          type: 'number',
+          trend: {
+            value: 12,
+            direction: 'up',
+            isIncreaseBad: false,
+          },
+        };
+      },
+      'total-employees': () => {
+        const stats = demoData.getDashboardStats(companyId);
+        return {
+          value: stats.employees.total,
+          label: 'Total Employees',
+          type: 'number',
+          trend: {
+            value: 4,
+            direction: 'up',
+            isIncreaseBad: false,
+          },
+        };
+      },
+      'active-tasks': () => {
+        const stats = demoData.getDashboardStats(companyId);
+        return {
+          value: stats.tasks.active,
+          label: 'Active Tasks',
+          type: 'number',
+          trend: {
+            value: 5,
+            direction: 'up',
+            isIncreaseBad: false,
+          },
+        };
+      },
+      'total-revenue': () => {
+        const stats = demoData.getDashboardStats(companyId);
+        return {
+          value: 28500000,
+          label: 'Total Revenue',
+          type: 'currency',
+          trend: {
+            value: 15.4,
+            direction: 'up',
+            isIncreaseBad: false,
+          },
+        };
+      },
+      'revenue-trend': () => {
+        return {
+          data: [
+            { month: 'Jan', revenue: 18500000 },
+            { month: 'Feb', revenue: 22000000 },
+            { month: 'Mar', revenue: 25000000 },
+            { month: 'Apr', revenue: 28500000 },
+          ],
+        };
+      },
+      'recent-activities': () => {
+        return {
+          activities: demoData.getDashboardActivity(companyId),
+        };
+      },
+      'project-overview': () => {
+        const projects = demoData.getProjects(companyId);
+        return {
+          projects: projects.slice(0, 5).map(p => ({
+            id: p.id,
+            name: p.name,
+            status: p.status,
+            progress: p.progress_percentage,
+          })),
+        };
+      },
+      'active-projects': () => {
+        const overview = demoData.getProjectsOverview(companyId);
+        return {
+          value: overview.inProgress,
+          change: '+2',
+          changeType: 'positive',
+        };
+      },
+      'pending-approvals': () => {
+        const leaves = demoData.getLeaves(companyId);
+        const pendingLeaves = leaves.filter(l => l.status === 'pending').length;
+        return {
+          value: pendingLeaves,
+          change: '-1',
+          changeType: 'positive',
+        };
+      },
+      'employee-count': () => {
+        const stats = demoData.getDashboardStats(companyId);
+        return {
+          value: stats.employees.total,
+          change: stats.employees.change,
+          changeType: stats.employees.changeType,
+        };
+      },
+      'attendance-rate': () => {
+        const stats = demoData.getDashboardStats(companyId);
+        return {
+          value: stats.hrOverview.attendance,
+          change: '+2%',
+          changeType: 'positive',
+        };
+      },
+      'open-positions': () => {
+        const jobs = demoData.getJobPostings(companyId);
+        const openJobs = jobs.filter(j => j.status === 'open').length;
+        return {
+          value: openJobs,
+          change: '+1',
+          changeType: 'positive',
+        };
+      },
+      'leave-requests': () => {
+        const leaves = demoData.getLeaves(companyId);
+        const pendingLeaves = leaves.filter(l => l.status === 'pending').length;
+        return {
+          value: pendingLeaves,
+          change: '0',
+          changeType: 'neutral',
+        };
+      },
+    };
+    
+    const dataFn = widgetDataMap[metricType];
+    if (dataFn) {
+      const data = dataFn();
+      console.log('[DemoAdapter] Widget data for', metricType, ':', data);
+      return okResponse({
+        success: true,
+        data: {
+          ...data,
+          lastUpdated: new Date().toISOString(),
+        },
+      });
+    }
+    
+    console.warn('[DemoAdapter] Unknown widget type:', metricType);
+    return okResponse({
+      success: true,
+      data: {
+        value: 0,
+        change: '0',
+        changeType: 'neutral',
+        lastUpdated: new Date().toISOString(),
+      },
+    });
+  },
+
+  'POST /dashboard/widgets/:widgetType/refresh': ({ params, config }) => {
+    // Just call the GET handler for refresh
+    return handlers['GET /dashboard/widgets/:widgetType/data']({ params, config });
   },
 };
 

@@ -53,8 +53,10 @@ export const WIDGET_REGISTRY = {
       <MetricCard
         value={config.value}
         label={config.label}
+        type={config.type || config.format || 'number'}
         trend={config.trend}
-        format={config.format}
+        icon={config.icon}
+        description={config.description}
       />
     ),
   },
@@ -70,16 +72,18 @@ export const WIDGET_REGISTRY = {
       title: 'Chart',
       chartType: 'line',
       data: [],
-      xKey: 'name',
-      yKey: 'value',
+      xAxisKey: 'name',
+      lines: [],
     },
     factory: (config) => (
       <ChartWidget
         title={config.title}
-        chartType={config.chartType}
+        type={config.chartType}
         data={config.data}
-        xKey={config.xKey}
-        yKey={config.yKey}
+        config={{
+          xAxisKey: config.xKey || config.xAxisKey || 'name',
+          lines: config.lines || [],
+        }}
       />
     ),
   },

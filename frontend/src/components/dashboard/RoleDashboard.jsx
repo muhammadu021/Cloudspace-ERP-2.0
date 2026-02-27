@@ -7,7 +7,7 @@
  * Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.8, 2.1, 2.3, 2.4, 2.5, 2.6, 13.1
  */
 
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { cn } from '@/design-system/utils';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -16,6 +16,7 @@ import { useDashboardConfig } from '@/hooks/useDashboardConfig';
 import DashboardTypeSelector from './DashboardTypeSelector';
 import DashboardContent from './DashboardContent';
 import Alert from '@/design-system/components/Alert';
+import { demoData } from '@/services/demo/demoData';
 
 /**
  * Role Dashboard Container Component
@@ -26,6 +27,16 @@ import Alert from '@/design-system/components/Alert';
 const RoleDashboard = () => {
   const location = useLocation();
   const { role, userType, isSystemAdmin, loading: roleLoading } = useUserRole();
+  
+  // Fetch dashboard stats directly
+  const [dashboardStats, setDashboardStats] = useState(null);
+  
+  useEffect(() => {
+    // Get stats from demoData
+    const stats = demoData.getDashboardStats(101); // company_id 101
+    console.log('[RoleDashboard] Fetched dashboard stats:', stats);
+    setDashboardStats(stats);
+  }, []);
   
   // Detect route context
   const isMySpaceContext = useMemo(() => {
@@ -232,6 +243,7 @@ const RoleDashboard = () => {
         role={effectiveDashboardType}
         onRefresh={handleGlobalRefresh}
         lastUpdate={config.updatedAt}
+        dashboardStats={dashboardStats}
       />
     </div>
   );

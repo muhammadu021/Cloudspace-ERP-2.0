@@ -12,6 +12,8 @@ const MySpaceDashboard = () => {
   const { data: dashboard, isLoading } = useGetMySpaceDashboardQuery();
   const [clockInOut] = useClockInOutMutation();
   
+  console.log('[MySpaceDashboard] dashboard data:', dashboard);
+  
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showIssueModal, setShowIssueModal] = useState(false);
@@ -19,9 +21,11 @@ const MySpaceDashboard = () => {
   const handleClockAction = async () => {
     try {
       const action = dashboard?.todayAttendance?.clockIn ? 'out' : 'in';
+      console.log('[MySpaceDashboard] Clock action:', action, 'dashboard:', dashboard);
       await clockInOut({ type: action, timestamp: new Date().toISOString() }).unwrap();
       toast.success(`Successfully clocked ${action}!`);
     } catch (error) {
+      console.error('[MySpaceDashboard] Clock error:', error);
       toast.error('Failed to clock in/out. Please try again.');
     }
   };

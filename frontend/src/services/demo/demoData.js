@@ -491,33 +491,68 @@ const defaultData = {
   // Recruitment Module
   recruitment: {
     jobPostings: [
-      { id: 1, title: 'Senior Backend Developer', department: 'Technology', type: 'Full-time', status: 'active', company_id: 101, created_at: '2026-01-15' },
-      { id: 2, title: 'Sales Executive', department: 'Sales', type: 'Full-time', status: 'active', company_id: 101, created_at: '2026-01-20' }
+      { id: 1, title: 'Senior Backend Developer', department: 'Technology', type: 'Full-time', status: 'active', company_id: 101, created_at: '2026-01-15', salary_range: '₦8M - ₦12M', location: 'Lagos' },
+      { id: 2, title: 'Sales Executive', department: 'Sales', type: 'Full-time', status: 'active', company_id: 101, created_at: '2026-01-20', salary_range: '₦3M - ₦5M', location: 'Abuja' },
+      { id: 3, title: 'Product Designer', department: 'Technology', type: 'Full-time', status: 'active', company_id: 101, created_at: '2026-02-01', salary_range: '₦6M - ₦9M', location: 'Remote' }
     ],
     candidates: [
-      { id: 1, name: 'John Doe', email: 'john@example.com', job_id: 1, status: 'interview', company_id: 101, applied_at: '2026-01-25' },
-      { id: 2, name: 'Jane Smith', email: 'jane@example.com', job_id: 1, status: 'new', company_id: 101, applied_at: '2026-02-01' }
+      { id: 1, name: 'John Doe', email: 'john@example.com', job_id: 1, status: 'interview', company_id: 101, applied_at: '2026-01-25', phone: '+234 801 234 5678' },
+      { id: 2, name: 'Jane Smith', email: 'jane@example.com', job_id: 1, status: 'new', company_id: 101, applied_at: '2026-02-01', phone: '+234 802 345 6789' },
+      { id: 3, name: 'Ahmed Ibrahim', email: 'ahmed@example.com', job_id: 2, status: 'interview', company_id: 101, applied_at: '2026-01-28', phone: '+234 803 456 7890' },
+      { id: 4, name: 'Blessing Okafor', email: 'blessing@example.com', job_id: 3, status: 'new', company_id: 101, applied_at: '2026-02-03', phone: '+234 804 567 8901' },
+      { id: 5, name: 'Chidi Eze', email: 'chidi@example.com', job_id: 1, status: 'offer', company_id: 101, applied_at: '2026-01-22', phone: '+234 805 678 9012' }
     ],
     applications: [
       { id: 1, candidate_id: 1, job_id: 1, status: 'interviewing', company_id: 101, created_at: '2026-01-26' },
-      { id: 2, candidate_id: 2, job_id: 1, status: 'new', company_id: 101, created_at: '2026-02-01' }
+      { id: 2, candidate_id: 2, job_id: 1, status: 'new', company_id: 101, created_at: '2026-02-01' },
+      { id: 3, candidate_id: 3, job_id: 2, status: 'interviewing', company_id: 101, created_at: '2026-01-29' },
+      { id: 4, candidate_id: 4, job_id: 3, status: 'new', company_id: 101, created_at: '2026-02-03' },
+      { id: 5, candidate_id: 5, job_id: 1, status: 'offer_sent', company_id: 101, created_at: '2026-01-23' }
     ],
     interviews: [
-      { id: 1, candidate_id: 1, job_id: 1, interviewer_id: 3, type: 'Technical', date: '2026-02-10T10:00:00Z', status: 'scheduled', company_id: 101 }
+      { id: 1, candidate_id: 1, job_id: 1, interviewer_id: 3, type: 'Technical', date: '2026-02-10T10:00:00Z', status: 'scheduled', company_id: 101 },
+      { id: 2, candidate_id: 3, job_id: 2, interviewer_id: 12, type: 'Behavioral', date: '2026-02-12T14:00:00Z', status: 'scheduled', company_id: 101 },
+      { id: 3, candidate_id: 5, job_id: 1, interviewer_id: 3, type: 'Technical', date: '2026-01-30T10:00:00Z', status: 'completed', company_id: 101 }
     ],
-    evaluations: [],
+    evaluations: [
+      { id: 1, candidate_id: 5, interviewer_id: 3, rating: 4.5, feedback: 'Strong technical skills, good culture fit', company_id: 101, created_at: '2026-01-30' },
+      { id: 2, candidate_id: 1, interviewer_id: 3, rating: 4.0, feedback: 'Good potential, needs more experience', company_id: 101, created_at: '2026-02-05' }
+    ],
     backgroundChecks: [],
-    offerLetters: [],
+    offerLetters: [
+      { id: 1, candidate_id: 5, job_id: 1, salary: 10000000, start_date: '2026-03-01', status: 'sent', company_id: 101, created_at: '2026-02-05' }
+    ],
     jobChannels: [],
   },
   // Performance Module
   performance: {
-    reviewCycles: [],
-    reviews: [],
-    goals: [],
-    feedbackRequests: [],
+    reviewCycles: [
+      { id: 1, name: 'Q4 2025 Performance Review', start_date: '2025-12-01', end_date: '2025-12-31', status: 'completed', company_id: 101 },
+      { id: 2, name: 'Q1 2026 Performance Review', start_date: '2026-01-01', end_date: '2026-03-31', status: 'in_progress', company_id: 101 }
+    ],
+    reviews: [
+      { id: 1, employee_id: 8, reviewer_id: 3, cycle_id: 1, rating: 4.5, status: 'completed', date: '2026-01-10', feedback: 'Excellent performance on ERP migration project', company_id: 101 },
+      { id: 2, employee_id: 9, reviewer_id: 3, cycle_id: 1, rating: 4.0, status: 'completed', date: '2026-01-12', feedback: 'Good progress, needs to improve code documentation', company_id: 101 },
+      { id: 3, employee_id: 10, reviewer_id: 3, cycle_id: 1, rating: 4.8, status: 'completed', date: '2026-01-15', feedback: 'Outstanding design work, great team player', company_id: 101 },
+      { id: 4, employee_id: 12, reviewer_id: 1, cycle_id: 1, rating: 4.3, status: 'completed', date: '2026-01-18', feedback: 'Exceeded sales targets, excellent customer relations', company_id: 101 },
+      { id: 5, employee_id: 13, reviewer_id: 2, cycle_id: 1, rating: 4.2, status: 'completed', date: '2026-01-20', feedback: 'Creative campaigns, good ROI on marketing spend', company_id: 101 }
+    ],
+    goals: [
+      { id: 1, employee_id: 8, title: 'Complete ERP Migration', description: 'Lead the migration to new ERP system', status: 'in_progress', due_date: '2026-03-31', progress: 75, company_id: 101 },
+      { id: 2, employee_id: 12, title: 'Close 10 New Deals', description: 'Acquire 10 new enterprise clients', status: 'in_progress', due_date: '2026-03-31', progress: 40, company_id: 101 },
+      { id: 3, employee_id: 13, title: 'Launch Marketing Campaign', description: 'Q1 brand awareness campaign', status: 'completed', due_date: '2026-01-31', progress: 100, company_id: 101 },
+      { id: 4, employee_id: 9, title: 'Improve Code Quality', description: 'Reduce bug rate by 30%', status: 'in_progress', due_date: '2026-03-31', progress: 60, company_id: 101 },
+      { id: 5, employee_id: 10, title: 'Design System Overhaul', description: 'Create comprehensive design system', status: 'in_progress', due_date: '2026-02-28', progress: 85, company_id: 101 }
+    ],
+    feedbackRequests: [
+      { id: 1, employee_id: 9, requested_from: 8, status: 'completed', company_id: 101, created_at: '2026-01-15' },
+      { id: 2, employee_id: 10, requested_from: 3, status: 'pending', company_id: 101, created_at: '2026-02-01' }
+    ],
     pips: [],
-    careerPlans: [],
+    careerPlans: [
+      { id: 1, employee_id: 9, target_role: 'Senior Software Engineer', timeline: '12 months', status: 'active', company_id: 101 },
+      { id: 2, employee_id: 12, target_role: 'Sales Manager', timeline: '18 months', status: 'active', company_id: 101 }
+    ],
     careerPaths: [],
     skillAssessments: [],
     ratingScales: [],
@@ -525,36 +560,198 @@ const defaultData = {
   },
   // Training Module
   training: {
-    courses: [],
-    learningPaths: [],
-    sessions: [],
-    enrollments: [],
-    instructors: [],
-    certifications: [],
+    courses: [
+      { id: 1, title: 'Advanced React Development', description: 'Master React hooks, context, and performance optimization', instructor: 'External - Udemy', duration: '40 hours', status: 'active', company_id: 101, category: 'Technical', enrolled_count: 3 },
+      { id: 2, title: 'Leadership Skills', description: 'Develop essential leadership and management skills', instructor: 'Internal - HR Team', duration: '20 hours', status: 'active', company_id: 101, category: 'Soft Skills', enrolled_count: 5 },
+      { id: 3, title: 'Sales Techniques', description: 'Modern sales strategies and customer relationship management', instructor: 'External - Sales Academy', duration: '16 hours', status: 'active', company_id: 101, category: 'Sales', enrolled_count: 2 },
+      { id: 4, title: 'Financial Analysis', description: 'Understanding financial statements and business metrics', instructor: 'Internal - Finance Team', duration: '24 hours', status: 'active', company_id: 101, category: 'Finance', enrolled_count: 4 },
+      { id: 5, title: 'Cybersecurity Basics', description: 'Essential security practices for all employees', instructor: 'External - Security Pro', duration: '8 hours', status: 'active', company_id: 101, category: 'Compliance', enrolled_count: 18 }
+    ],
+    learningPaths: [
+      { id: 1, name: 'Software Engineer Career Path', description: 'From Junior to Senior Engineer', courses: [1], company_id: 101 },
+      { id: 2, name: 'Management Track', description: 'Leadership development program', courses: [2, 4], company_id: 101 }
+    ],
+    sessions: [
+      { id: 1, course_id: 1, title: 'React Hooks Deep Dive', date: '2026-02-15T10:00:00Z', duration: 120, instructor_id: 3, status: 'scheduled', company_id: 101 },
+      { id: 2, course_id: 2, title: 'Effective Communication', date: '2026-02-18T14:00:00Z', duration: 90, instructor_id: 7, status: 'scheduled', company_id: 101 },
+      { id: 3, course_id: 5, title: 'Security Awareness', date: '2026-02-10T09:00:00Z', duration: 60, instructor_id: 15, status: 'completed', company_id: 101 }
+    ],
+    enrollments: [
+      { id: 1, employee_id: 9, course_id: 1, status: 'in_progress', progress: 60, enrolled_at: '2026-01-15', company_id: 101 },
+      { id: 2, employee_id: 10, course_id: 1, status: 'in_progress', progress: 45, enrolled_at: '2026-01-15', company_id: 101 },
+      { id: 3, employee_id: 8, course_id: 1, status: 'completed', progress: 100, enrolled_at: '2026-01-10', completed_at: '2026-02-01', company_id: 101 },
+      { id: 4, employee_id: 6, course_id: 2, status: 'completed', progress: 100, enrolled_at: '2026-01-05', completed_at: '2026-01-25', company_id: 101 },
+      { id: 5, employee_id: 12, course_id: 3, status: 'in_progress', progress: 75, enrolled_at: '2026-01-20', company_id: 101 },
+      { id: 6, employee_id: 16, course_id: 3, status: 'in_progress', progress: 50, enrolled_at: '2026-01-22', company_id: 101 },
+      { id: 7, employee_id: 11, course_id: 4, status: 'in_progress', progress: 30, enrolled_at: '2026-02-01', company_id: 101 }
+    ],
+    instructors: [
+      { id: 1, name: 'Mustapha Tajuddeen', employee_id: 3, specialization: 'Software Development', company_id: 101 },
+      { id: 2, name: 'Fatima Zahra', employee_id: 7, specialization: 'HR & Leadership', company_id: 101 }
+    ],
+    certifications: [
+      { id: 1, employee_id: 8, course_id: 1, issued_date: '2026-02-01', certificate_url: '/certificates/cert-001.pdf', company_id: 101 },
+      { id: 2, employee_id: 6, course_id: 2, issued_date: '2026-01-25', certificate_url: '/certificates/cert-002.pdf', company_id: 101 }
+    ],
     progress: [],
-    budgets: [],
-    complianceTraining: [],
+    budgets: [
+      { id: 1, year: 2026, allocated: 5000000, spent: 1200000, remaining: 3800000, company_id: 101 }
+    ],
+    complianceTraining: [
+      { id: 1, course_id: 5, required_for: 'all', deadline: '2026-03-31', completion_rate: 100, company_id: 101 }
+    ],
   },
   // Sales Module
   sales: {
-    orders: [],
-    customers: [],
-    quotes: [],
-    campaigns: [],
+    orders: [
+      { id: 1, order_number: 'ORD-2026-001', customer_id: 1, amount: 5500000, status: 'completed', date: '2026-01-15', items: 'ERP License - 50 users', company_id: 101 },
+      { id: 2, order_number: 'ORD-2026-002', customer_id: 2, amount: 3200000, status: 'in_progress', date: '2026-01-25', items: 'Consulting Services', company_id: 101 },
+      { id: 3, order_number: 'ORD-2026-003', customer_id: 3, amount: 2800000, status: 'pending', date: '2026-02-01', items: 'Software Implementation', company_id: 101 },
+      { id: 4, order_number: 'ORD-2026-004', customer_id: 1, amount: 4200000, status: 'completed', date: '2026-02-05', items: 'Training & Support', company_id: 101 },
+      { id: 5, order_number: 'ORD-2026-005', customer_id: 5, amount: 6800000, status: 'in_progress', date: '2026-02-08', items: 'ERP License - 100 users', company_id: 101 }
+    ],
+    customers: [
+      { id: 1, name: 'Dangote Group', contact_person: 'Aliko Dangote', email: 'procurement@dangote.com', phone: '+234 1 234 5678', status: 'active', total_orders: 5, lifetime_value: 15000000, company_id: 101, industry: 'Manufacturing', created_at: '2025-06-15' },
+      { id: 2, name: 'MTN Nigeria', contact_person: 'Karl Toriola', email: 'vendor@mtn.com', phone: '+234 803 000 0001', status: 'active', total_orders: 3, lifetime_value: 8500000, company_id: 101, industry: 'Telecommunications', created_at: '2025-08-20' },
+      { id: 3, name: 'Access Bank', contact_person: 'Herbert Wigwe', email: 'it@accessbank.com', phone: '+234 1 271 2005', status: 'active', total_orders: 2, lifetime_value: 5200000, company_id: 101, industry: 'Banking', created_at: '2025-09-10' },
+      { id: 4, name: 'Flour Mills', contact_person: 'Paul Gbededo', email: 'admin@flourmills.com', phone: '+234 1 280 0000', status: 'prospect', total_orders: 0, lifetime_value: 0, company_id: 101, industry: 'Food Processing', created_at: '2026-01-05' },
+      { id: 5, name: 'Nestle Nigeria', contact_person: 'Mauricio Alarcon', email: 'procurement@nestle.com', phone: '+234 1 271 6300', status: 'active', total_orders: 4, lifetime_value: 12000000, company_id: 101, industry: 'FMCG', created_at: '2025-07-12' },
+      { id: 6, name: 'Zenith Bank', contact_person: 'Ebenezer Onyeagwu', email: 'tech@zenithbank.com', phone: '+234 1 278 7000', status: 'active', total_orders: 2, lifetime_value: 6500000, company_id: 101, industry: 'Banking', created_at: '2025-10-18' },
+      { id: 7, name: 'Nigerian Breweries', contact_person: 'Hans Essaadi', email: 'supply@nbreweries.com', phone: '+234 1 271 5400', status: 'prospect', total_orders: 0, lifetime_value: 0, company_id: 101, industry: 'Beverages', created_at: '2026-01-28' }
+    ],
+    quotes: [
+      { id: 1, quote_number: 'QT-2026-001', customer_id: 4, amount: 6500000, status: 'sent', valid_until: '2026-03-01', items: 'ERP License + Implementation', created_at: '2026-01-20', company_id: 101 },
+      { id: 2, quote_number: 'QT-2026-002', customer_id: 5, amount: 3800000, status: 'accepted', valid_until: '2026-02-28', items: 'Consulting Package', created_at: '2026-01-25', company_id: 101 },
+      { id: 3, quote_number: 'QT-2026-003', customer_id: 7, amount: 8200000, status: 'sent', valid_until: '2026-03-15', items: 'Enterprise Solution', created_at: '2026-02-05', company_id: 101 }
+    ],
+    campaigns: [
+      { id: 1, name: 'Q1 Enterprise Push', description: 'Target large enterprises for ERP adoption', status: 'active', budget: 2000000, spent: 800000, leads_generated: 45, start_date: '2026-01-01', end_date: '2026-03-31', company_id: 101 },
+      { id: 2, name: 'Banking Sector Outreach', description: 'Focused campaign on financial institutions', status: 'active', budget: 1500000, spent: 600000, leads_generated: 28, start_date: '2026-01-15', end_date: '2026-04-15', company_id: 101 },
+      { id: 3, name: 'SME Digital Transformation', description: 'Affordable packages for SMEs', status: 'completed', budget: 1000000, spent: 950000, leads_generated: 120, start_date: '2025-10-01', end_date: '2025-12-31', company_id: 101 }
+    ],
   },
   // Collaboration Module
   collaboration: {
-    teams: [],
-    messages: [],
-    announcements: [],
-    events: [],
-    meetings: [],
+    teams: [
+      { id: 1, name: 'Engineering Team', description: 'Software development and DevOps', members: [3, 8, 9, 10, 15, 17], lead_id: 3, company_id: 101, created_at: '2025-06-01' },
+      { id: 2, name: 'Sales Team', description: 'Business development and customer success', members: [12, 16], lead_id: 12, company_id: 101, created_at: '2025-06-01' },
+      { id: 3, name: 'Marketing Team', description: 'Brand and digital marketing', members: [2, 13], lead_id: 2, company_id: 101, created_at: '2025-06-01' },
+      { id: 4, name: 'Finance Team', description: 'Accounting and financial planning', members: [5, 11], lead_id: 5, company_id: 101, created_at: '2025-06-01' },
+      { id: 5, name: 'Operations Team', description: 'Business operations and logistics', members: [4, 6, 14], lead_id: 4, company_id: 101, created_at: '2025-06-01' }
+    ],
+    messages: [
+      { id: 1, from_id: 3, to_id: 8, message: 'Great work on the migration! Let\'s review the code tomorrow.', sent_at: '2026-02-06T15:30:00Z', read: true, company_id: 101 },
+      { id: 2, from_id: 12, to_id: 1, message: 'Meeting with Dangote Group confirmed for next week.', sent_at: '2026-02-06T16:00:00Z', read: false, company_id: 101 },
+      { id: 3, from_id: 7, to_id: 9, message: 'Please submit your leave request for approval.', sent_at: '2026-02-05T10:00:00Z', read: true, company_id: 101 },
+      { id: 4, from_id: 2, to_id: 13, message: 'The campaign materials look great! Let\'s launch on Monday.', sent_at: '2026-02-06T14:00:00Z', read: true, company_id: 101 },
+      { id: 5, from_id: 5, to_id: 11, message: 'Q1 budget report is due by Friday.', sent_at: '2026-02-04T09:00:00Z', read: true, company_id: 101 }
+    ],
+    announcements: [
+      { id: 1, title: 'Q1 All-Hands Meeting', message: 'Join us for Q1 review and planning session on February 15th at 10 AM. Attendance is mandatory for all team leads.', posted_by: 1, posted_at: '2026-02-01T08:00:00Z', priority: 'high', company_id: 101 },
+      { id: 2, title: 'New Office Policy', message: 'Updated remote work policy effective immediately. Check your email for details.', posted_by: 7, posted_at: '2026-01-28T12:00:00Z', priority: 'medium', company_id: 101 },
+      { id: 3, title: 'Team Building Event', message: 'Annual team outing scheduled for March 10th. RSVP by February 20th.', posted_by: 4, posted_at: '2026-02-03T14:00:00Z', priority: 'low', company_id: 101 },
+      { id: 4, title: 'System Maintenance', message: 'Scheduled maintenance on Saturday, Feb 10th from 2 AM - 6 AM. Systems will be unavailable.', posted_by: 15, posted_at: '2026-02-05T16:00:00Z', priority: 'high', company_id: 101 },
+      { id: 5, title: 'New Employee Welcome', message: 'Please join us in welcoming our new Senior Developer, Chidi Eze, starting March 1st!', posted_by: 7, posted_at: '2026-02-06T09:00:00Z', priority: 'low', company_id: 101 }
+    ],
+    events: [
+      { id: 1, title: 'Sprint Planning', description: 'Bi-weekly sprint planning session', date: '2026-02-10T09:00:00Z', end_date: '2026-02-10T11:00:00Z', team_id: 1, attendees: [3, 8, 9, 10, 15], location: 'Conference Room A', company_id: 101 },
+      { id: 2, title: 'Sales Review', description: 'Monthly sales performance review', date: '2026-02-12T14:00:00Z', end_date: '2026-02-12T16:00:00Z', team_id: 2, attendees: [1, 12, 16], location: 'Executive Boardroom', company_id: 101 },
+      { id: 3, title: 'Marketing Strategy Session', description: 'Q2 marketing planning', date: '2026-02-15T10:00:00Z', end_date: '2026-02-15T12:00:00Z', team_id: 3, attendees: [2, 13], location: 'Marketing Office', company_id: 101 },
+      { id: 4, title: 'Budget Review', description: 'Q1 budget vs actual review', date: '2026-02-18T13:00:00Z', end_date: '2026-02-18T15:00:00Z', team_id: 4, attendees: [1, 5, 11], location: 'Finance Office', company_id: 101 },
+      { id: 5, title: 'All-Hands Meeting', description: 'Company-wide quarterly meeting', date: '2026-02-15T10:00:00Z', end_date: '2026-02-15T12:00:00Z', team_id: null, attendees: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], location: 'Main Hall', company_id: 101 }
+    ],
+    meetings: [
+      { id: 1, title: 'Client Demo - Dangote', date: '2026-02-14T15:00:00Z', duration: 60, organizer_id: 12, attendees: [1, 12, 3], status: 'scheduled', company_id: 101 },
+      { id: 2, title: 'Code Review Session', date: '2026-02-11T10:00:00Z', duration: 90, organizer_id: 3, attendees: [3, 8, 9, 10], status: 'scheduled', company_id: 101 },
+      { id: 3, title: 'HR Policy Discussion', date: '2026-02-13T14:00:00Z', duration: 45, organizer_id: 7, attendees: [1, 7, 4], status: 'scheduled', company_id: 101 }
+    ],
   },
   // Admin Module
   admin: {
-    assets: [],
-    auditLogs: [],
-    systemSettings: {},
+    assets: [
+      { id: 1, name: 'Dell XPS 15 Laptop', asset_tag: 'LAP-001', category: 'Laptop', assigned_to: 8, purchase_date: '2025-06-15', purchase_cost: 1200000, status: 'active', company_id: 101, location: 'Tech Department' },
+      { id: 2, name: 'Dell XPS 15 Laptop', asset_tag: 'LAP-002', category: 'Laptop', assigned_to: 9, purchase_date: '2025-06-15', purchase_cost: 1200000, status: 'active', company_id: 101, location: 'Tech Department' },
+      { id: 3, name: 'MacBook Pro M3', asset_tag: 'LAP-003', category: 'Laptop', assigned_to: 10, purchase_date: '2025-07-01', purchase_cost: 2500000, status: 'active', company_id: 101, location: 'Tech Department' },
+      { id: 4, name: 'LG 27" 4K Monitor', asset_tag: 'MON-001', category: 'Monitor', assigned_to: 8, purchase_date: '2025-06-20', purchase_cost: 350000, status: 'active', company_id: 101, location: 'Tech Department' },
+      { id: 5, name: 'LG 27" 4K Monitor', asset_tag: 'MON-002', category: 'Monitor', assigned_to: 9, purchase_date: '2025-06-20', purchase_cost: 350000, status: 'active', company_id: 101, location: 'Tech Department' },
+      { id: 6, name: 'iPhone 14 Pro', asset_tag: 'PHN-001', category: 'Phone', assigned_to: 1, purchase_date: '2025-08-01', purchase_cost: 800000, status: 'active', company_id: 101, location: 'Executive Office' },
+      { id: 7, name: 'Conference Room Projector', asset_tag: 'PRJ-001', category: 'Equipment', assigned_to: null, purchase_date: '2025-05-10', purchase_cost: 450000, status: 'active', company_id: 101, location: 'Conference Room A' },
+      { id: 8, name: 'Office Printer - HP LaserJet', asset_tag: 'PRT-001', category: 'Equipment', assigned_to: null, purchase_date: '2025-06-01', purchase_cost: 280000, status: 'active', company_id: 101, location: 'Main Office' },
+      { id: 9, name: 'Standing Desk', asset_tag: 'FUR-001', category: 'Furniture', assigned_to: 3, purchase_date: '2025-06-10', purchase_cost: 180000, status: 'active', company_id: 101, location: 'Tech Department' },
+      { id: 10, name: 'Ergonomic Chair', asset_tag: 'FUR-002', category: 'Furniture', assigned_to: 3, purchase_date: '2025-06-10', purchase_cost: 150000, status: 'active', company_id: 101, location: 'Tech Department' }
+    ],
+    auditLogs: [
+      { id: 1, user_id: 1, action: 'login', resource: 'auth', details: 'Successful login from 197.210.x.x', timestamp: '2026-02-06T08:00:00Z', company_id: 101 },
+      { id: 2, user_id: 3, action: 'update', resource: 'project', details: 'Updated project PROJ002 status', timestamp: '2026-02-06T09:30:00Z', company_id: 101 },
+      { id: 3, user_id: 7, action: 'create', resource: 'employee', details: 'Added new employee EMP019', timestamp: '2026-02-05T14:00:00Z', company_id: 101 },
+      { id: 4, user_id: 5, action: 'approve', resource: 'expense', details: 'Approved expense EXP-2026-020', timestamp: '2026-02-05T11:00:00Z', company_id: 101 },
+      { id: 5, user_id: 12, action: 'create', resource: 'customer', details: 'Added new customer: Nigerian Breweries', timestamp: '2026-02-04T16:00:00Z', company_id: 101 },
+      { id: 6, user_id: 8, action: 'update', resource: 'task', details: 'Completed task: Server Migration', timestamp: '2026-02-04T10:00:00Z', company_id: 101 },
+      { id: 7, user_id: 1, action: 'delete', resource: 'document', details: 'Deleted outdated policy document', timestamp: '2026-02-03T15:00:00Z', company_id: 101 },
+      { id: 8, user_id: 15, action: 'update', resource: 'system', details: 'Updated system configuration', timestamp: '2026-02-03T09:00:00Z', company_id: 101 },
+      { id: 9, user_id: 7, action: 'approve', resource: 'leave', details: 'Approved leave request for Yusuf Garba', timestamp: '2026-02-02T13:00:00Z', company_id: 101 },
+      { id: 10, user_id: 5, action: 'create', resource: 'budget', details: 'Created Q1 2026 budget', timestamp: '2026-01-31T10:00:00Z', company_id: 101 },
+      { id: 11, user_id: 3, action: 'update', resource: 'employee', details: 'Updated employee role for Amina Lawal', timestamp: '2026-01-30T14:00:00Z', company_id: 101 },
+      { id: 12, user_id: 12, action: 'create', resource: 'order', details: 'Created order ORD-2026-005', timestamp: '2026-01-28T11:00:00Z', company_id: 101 },
+      { id: 13, user_id: 1, action: 'login', resource: 'auth', details: 'Successful login from 197.210.x.x', timestamp: '2026-01-27T08:00:00Z', company_id: 101 },
+      { id: 14, user_id: 7, action: 'create', resource: 'announcement', details: 'Posted company-wide announcement', timestamp: '2026-01-26T12:00:00Z', company_id: 101 },
+      { id: 15, user_id: 5, action: 'approve', resource: 'payroll', details: 'Approved January 2026 payroll', timestamp: '2026-01-25T16:00:00Z', company_id: 101 }
+    ],
+    systemSettings: {
+      company_name: 'Cloudspace Demo Corp',
+      timezone: 'Africa/Lagos',
+      currency: 'NGN',
+      date_format: 'DD/MM/YYYY',
+      fiscal_year_start: '01/01',
+      working_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      working_hours: { start: '09:00', end: '17:00' },
+      leave_approval_required: true,
+      expense_approval_limit: 100000,
+      multi_currency_enabled: false,
+      email_notifications: true,
+      sms_notifications: false,
+      two_factor_auth: false,
+      password_expiry_days: 90,
+      session_timeout_minutes: 60,
+      backup_frequency: 'daily',
+      data_retention_days: 365
+    },
+  },
+  // Support Module
+  support: {
+    tickets: [
+      { id: 1, ticket_number: 'SUP-2026-001', title: 'Cannot access payroll module', description: 'Getting permission error when trying to view payroll', priority: 'high', status: 'open', created_by: 11, assigned_to: 15, company_id: 101, created_at: '2026-02-06T09:00:00Z', category: 'Technical' },
+      { id: 2, ticket_number: 'SUP-2026-002', title: 'Password reset request', description: 'User forgot password and needs reset', priority: 'medium', status: 'in_progress', created_by: 14, assigned_to: 15, company_id: 101, created_at: '2026-02-05T14:00:00Z', category: 'Account' },
+      { id: 3, ticket_number: 'SUP-2026-003', title: 'Report generation failing', description: 'Monthly sales report not generating', priority: 'high', status: 'resolved', created_by: 12, assigned_to: 3, company_id: 101, created_at: '2026-02-04T10:00:00Z', resolved_at: '2026-02-05T16:00:00Z', category: 'Technical' },
+      { id: 4, ticket_number: 'SUP-2026-004', title: 'Feature request: Dark mode', description: 'Request to add dark mode to the application', priority: 'low', status: 'open', created_by: 10, assigned_to: null, company_id: 101, created_at: '2026-02-03T11:00:00Z', category: 'Feature Request' },
+      { id: 5, ticket_number: 'SUP-2026-005', title: 'Slow dashboard loading', description: 'Dashboard takes too long to load data', priority: 'medium', status: 'in_progress', created_by: 6, assigned_to: 8, company_id: 101, created_at: '2026-02-02T15:00:00Z', category: 'Performance' },
+      { id: 6, ticket_number: 'SUP-2026-006', title: 'Training on new features', description: 'Need training session for new HR features', priority: 'low', status: 'resolved', created_by: 7, assigned_to: 7, company_id: 101, created_at: '2026-01-28T10:00:00Z', resolved_at: '2026-02-01T14:00:00Z', category: 'Training' },
+      { id: 7, ticket_number: 'SUP-2026-007', title: 'Mobile app not syncing', description: 'Mobile app data not syncing with web', priority: 'high', status: 'open', created_by: 13, assigned_to: 15, company_id: 101, created_at: '2026-02-06T13:00:00Z', category: 'Technical' }
+    ],
+    faq: [
+      { id: 1, question: 'How do I reset my password?', answer: 'Click on "Forgot Password" on the login page and follow the instructions sent to your email.', category: 'Account', views: 245, helpful_count: 198, company_id: 101 },
+      { id: 2, question: 'How do I request leave?', answer: 'Go to HR Space > Leave Management > Request Leave. Fill in the form and submit for approval.', category: 'HR', views: 189, helpful_count: 165, company_id: 101 },
+      { id: 3, question: 'How do I submit an expense claim?', answer: 'Navigate to Finance Space > Expenses > New Expense. Upload receipts and submit for approval.', category: 'Finance', views: 156, helpful_count: 142, company_id: 101 },
+      { id: 4, question: 'How do I create a new project?', answer: 'Go to Project Space > Projects > Create New. Fill in project details and assign team members.', category: 'Projects', views: 134, helpful_count: 118, company_id: 101 },
+      { id: 5, question: 'How do I view my payslip?', answer: 'Go to My Space > Documents > Payslips. Select the month to view or download your payslip.', category: 'Payroll', views: 298, helpful_count: 276, company_id: 101 }
+    ],
+    categories: [
+      { id: 1, name: 'Technical', description: 'Technical issues and bugs', ticket_count: 4, company_id: 101 },
+      { id: 2, name: 'Account', description: 'Account and access issues', ticket_count: 1, company_id: 101 },
+      { id: 3, name: 'Feature Request', description: 'New feature requests', ticket_count: 1, company_id: 101 },
+      { id: 4, name: 'Performance', description: 'Performance and speed issues', ticket_count: 1, company_id: 101 },
+      { id: 5, name: 'Training', description: 'Training and documentation requests', ticket_count: 1, company_id: 101 }
+    ],
+    analytics: {
+      total_tickets: 7,
+      open_tickets: 3,
+      in_progress_tickets: 2,
+      resolved_tickets: 2,
+      avg_resolution_time_hours: 28,
+      satisfaction_rate: 92,
+      tickets_by_priority: { high: 3, medium: 2, low: 2 },
+      tickets_by_category: { Technical: 4, Account: 1, 'Feature Request': 1, Performance: 1, Training: 1 }
+    }
   },
   userTypes: [
     {
